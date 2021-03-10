@@ -1,0 +1,62 @@
+// https://projecteuler.net/problem=4
+
+/*
+
+A palindromic number reads the same both ways. The largest palindrome
+made from the product of two 2-digit numbers is 9009 = 91 × 99.
+
+Find the largest palindrome made from the product of two 3-digit numbers.
+
+*/
+
+
+fn main() {
+    let max = 999*999;
+    let min = 100*100;
+
+    let mut n = max;
+    while n >= min {
+        if !is_palindrome(n) {
+            n -= 1;
+            continue;
+        }
+
+        let mut n1 = (n as f64).sqrt() as u64;
+        while n1 < 1000 {
+            if n%n1 == 0 {
+                let n2 = n/n1;
+                if n2 < 100 {
+                    println!("no solution");
+                }
+                else {
+                    println!("solution: {} x {} = {}", n1, n2, n);
+                }
+                return;
+            }
+            n1 += 1;
+        }
+        n -= 1;
+    }
+}
+
+
+fn is_palindrome(mut n : u64) -> bool {
+    let mut v = std::vec::Vec::new();
+    while n > 0 {
+        v.push(n%10);
+        n = n/10;
+    }
+    if v.len() < 2 {
+        return false;
+    }
+    let mut l = 0;
+    let mut r = v.len()-1;
+    while l < r {
+        if v[l] != v[r] {
+            return false;
+        }
+        l += 1;
+        r -= 1;
+    }
+    return true;
+}
