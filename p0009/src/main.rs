@@ -22,6 +22,8 @@ fn main() {
             }
             if a*a + b*b == c*c {
                 println!("{}^2 + {}^2 = {}^2", a, b, c);
+                println!("{} x {} x {} = {} ", a, b, c, a*b*c);
+
                 return;
             }
         }
