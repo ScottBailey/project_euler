@@ -1,7 +1,9 @@
 // module sb::math
 
 #[allow(dead_code)]
-pub fn factors( mut n : u64) -> std::vec::Vec<u64> {
+pub fn factors<T>( mut n : T) -> std::vec::Vec<u64>
+    where T: u64, u32, u16, u8,
+{
     let primes = prime_to(n);
     let mut rv = std::vec::Vec::<u64>::new();
     while n > 1 {
@@ -17,8 +19,11 @@ pub fn factors( mut n : u64) -> std::vec::Vec<u64> {
 
 
 #[allow(dead_code)]
-pub fn is_prime(n : u64) -> bool {
-    let sqrtn = (n as f64).sqrt() as u64;
+pub fn is_prime<T>(n : T) -> bool
+    where T: u64, u32, u16, u8,
+{
+
+    let sqrtn = (n as f64).sqrt() as T;
 
     for i in 2..sqrtn {
         if n%i == 0 {
@@ -30,7 +35,9 @@ pub fn is_prime(n : u64) -> bool {
 
 
 #[allow(dead_code)]
-pub fn prime_to(m : u64) -> std::vec::Vec<u64> {
+pub fn prime_to<T>(m : T) -> std::vec::Vec<T>
+    where T: u64, u32, u16, u8,
+{
     let mut v = std::vec::Vec::new();
     v.reserve((m/5) as usize);
     if m == 1 {
@@ -44,7 +51,7 @@ pub fn prime_to(m : u64) -> std::vec::Vec<u64> {
 
     let mut test : u64 = 5;
     while test <= m {
-        let sqrt = (test as f64).sqrt() as u64;
+        let sqrt = (test as f64).sqrt() as T;
 
         let mut is_prime = true;
         for n in v.iter() {
