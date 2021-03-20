@@ -112,7 +112,6 @@ fn sol3() {
     let start_time = std::time::Instant::now();
 
     let mut vec = std::vec::Vec::<u64>::new();
-    //vec.resize(57_000_000_000, 0);
     vec.resize(1_000_000, 0);
     vec[1] = 1;
 
