@@ -49,7 +49,7 @@ fn main() {
     }
 
     let path = std::path::Path::new(&args[1]);
-    println!("Path: {}", path.display());
+    //println!("Path: {}", path.display());
 
 
 
@@ -99,10 +99,12 @@ fn main() {
 
     }
 
+    println!("Triangle has {} rows.", triangle.len());
+    /*
     for t in &triangle {
         println!("{:?}",*t);
     }
-
+    */
 
     for r in (0..triangle.len()-1).rev() { // row, but start at 1 above the bottom
         for c in 0..triangle[r].len() { // column
@@ -118,7 +120,7 @@ fn main() {
     }
 
 
-    println!("\nSolution: {}", triangle[0][0]);
+    println!("Solution: {}", triangle[0][0]);
 
     let elapsed = start_time.elapsed().as_micros();
     println!("Elasped time: {} us", elapsed);
