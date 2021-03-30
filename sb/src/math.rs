@@ -1,7 +1,7 @@
 // module sb::math
 
 #[allow(dead_code)]
-// this shuld get renamed
+// this should get renamed
 pub fn factors( mut n : u64) -> std::vec::Vec<u64> {
     let primes = prime_to(n);
     let mut rv = std::vec::Vec::<u64>::new();
@@ -12,6 +12,16 @@ pub fn factors( mut n : u64) -> std::vec::Vec<u64> {
                 n /= i;
             }
         }
+    }
+    return rv;
+}
+
+
+#[allow(dead_code)]
+pub fn sum(v : &std::vec::Vec::<u64>) -> u64 {
+    let mut rv = 0;
+    for n in v {
+        rv = rv + n;
     }
     return rv;
 }
@@ -100,4 +110,22 @@ pub fn divisors(m : u64) -> std::vec::Vec<u64> {
     }
 
     return rv1;
+}
+
+
+#[allow(dead_code)]
+pub fn proper_divisors(m : u64) -> std::vec::Vec<u64> {
+    let mut rv = divisors(m);
+    rv.pop();
+    return rv;
+}
+
+
+#[allow(dead_code)]
+pub fn factorial(n : u64) -> u64 {
+    let mut rv = 1;
+    for n in 2..=n {
+        rv *= n;
+    }
+    return rv;
 }

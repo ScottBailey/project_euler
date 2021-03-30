@@ -1,16 +1,14 @@
 // module sb::math
 
 #[allow(dead_code)]
-pub fn factors<T>( mut n : T) -> std::vec::Vec<u64>
-    where T: u64, u32, u16, u8,
-{
+pub fn factors<T: Clone + num::Integer>( n : &T) -> std::vec::Vec<T> where {
     let primes = prime_to(n);
-    let mut rv = std::vec::Vec::<u64>::new();
-    while n > 1 {
+    let mut rv = std::vec::Vec::<T>::new();
+    while n > num::one() {
         for i in &primes {
-            if n%i == 0 {
+            if *(n%*i) == num::zero() {
                 rv.push(*i);
-                n /= i;
+                n /= *i;
             }
         }
     }
@@ -19,25 +17,23 @@ pub fn factors<T>( mut n : T) -> std::vec::Vec<u64>
 
 
 #[allow(dead_code)]
-pub fn is_prime<T>(n : T) -> bool
-    where T: u64, u32, u16, u8,
-{
+pub fn is_prime<T: Clone + num::Integer>(n : T) -> bool {
 
     let sqrtn = (n as f64).sqrt() as T;
 
-    for i in 2..sqrtn {
+    let mut i : T = num::one() + num::one();
+    while i < sqrtn {
         if n%i == 0 {
             return false;
         }
+        i += 1;
     }
     return true;
 }
 
 
 #[allow(dead_code)]
-pub fn prime_to<T>(m : T) -> std::vec::Vec<T>
-    where T: u64, u32, u16, u8,
-{
+pub fn prime_to<T: Clone + num::Integer>(m : T) -> std::vec::Vec<T> {
     let mut v = std::vec::Vec::new();
     v.reserve((m/5) as usize);
     if m == 1 {
