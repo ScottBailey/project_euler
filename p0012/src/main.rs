@@ -30,8 +30,6 @@ This brute force method takes a long time. I suspect there is a faster way to ch
 */
 
 
-mod sb { pub mod math; }
-
 
 fn main() {
 
