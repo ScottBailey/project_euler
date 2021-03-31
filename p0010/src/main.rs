@@ -8,8 +8,6 @@ Find the sum of all the primes below two million.
 
 */
 
-mod sb { pub mod math; }
-
 fn main() {
 
     //let max = 10;
