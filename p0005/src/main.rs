@@ -10,8 +10,6 @@ of the numbers from 1 to 20?
 
 */
 
-mod sb { pub mod math; }
-
 fn main() {
 
     let max = 20;
