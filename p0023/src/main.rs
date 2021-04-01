@@ -78,7 +78,11 @@ fn solve() -> u64 {
 
 
 fn test_number(n : u64, v : &std::vec::Vec::<u64>) -> bool {
+    let half = n/2;
     for i in v.iter() {
+        if half < *i as u64 {
+            return true;
+        }
         let target = n - *i as u64;
         for j in v.iter().rev() {
             if target > *j as u64 {
