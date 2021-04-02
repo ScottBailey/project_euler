@@ -26,40 +26,44 @@ recurring cycle in its decimal fraction part.
 
 fn solve() -> u64 {
 
-    let mut cycle = 6;
-    let mut num = 7;
+    // values for divisors 10 and below are in the chart above, use them here:
+    let mut cycle = 6;  // longest legth so far
+    let mut num = 7;    // divisor generating the longest length so far
 
     for d in 11..1000 { // d is for divisor
-    //for d in 14..15 { // d is for divisor
-        let mut n = 1_u32;
-        // do long division here...
+
+        let mut n = 1_u32; // this is the numerator and remainder
 
         // v will contain ALL the fractional digits
         let mut v = std::vec::Vec::<u32>::with_capacity(500); // sized large because we can?
         loop {
-            n *= 10;
-            //println!("{:?} {} {} {}", &v, n, n/d, n%d);
-            let val = n/d;
-            if val > 0 {
-                n %= d;
-            }
-            v.push(val);
-
-            let r = repeats(&v);
-            if r != 0 {
-                if r > cycle {
-                    cycle = r;
-                    num = d;
-                }
-                //println!("1/{} = {:?}  r = {}", d, v, r);
-                break;
-            }
-
+            // did we get an even division?
             if n == 0 {
                 break;
             }
+            // store the number
+            v.push(n);
+
+            // test to see if the vector has a repeat
+            let r = repeats(&v);
+            if r > 0 {
+                // test to see if the repeat is a new max
+                if r > cycle {
+                    // set the new max
+                    cycle = r;
+                    num = d;
+                }
+                break; // go on to the next divisor
+            }
+
+            // long division happens here:
+            n *= 10;
+            if n >= d {
+                n %= d; // can't mod by zero
+            }
         }
     }
+
     num as u64
 }
 
@@ -68,22 +72,19 @@ fn solve() -> u64 {
 fn repeats(v : &std::vec::Vec::<u32>) -> u32 {
     // starting backwards...
 
-    if *v.last().unwrap() == 0 {
-        return 0;
-    }
+    let target = *v.last().unwrap(); // v is guaranteed at least one element
+    // sanity check
+    //if target == 0 {
+    //return 0;
+    //}
 
-    let len = v.len();
-    //println!("{:?} {} {}", &v, len, len/2);
-
-    for i in 1..=(len/2) {
-        let slice1 = &v[len-i..len];
-        let slice2 = &v[len-(i*2)..len-i];
-        //println!("  {} {} {:?}", len-i, len, &slice1);
-        //println!("  {} {} {:?}", len-(i*2), len-i, &slice2);
-        if slice1 == slice2 && (i > 1 || slice1[0] != 0) {
-            return i as u32;
+    for (i,n) in v.iter().enumerate() {
+        if *n == target {
+            let delta = v.len() - 1 - i;
+            return delta as u32;
         }
     }
+
     return 0;
 }
 
