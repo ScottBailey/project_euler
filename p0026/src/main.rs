@@ -35,7 +35,7 @@ fn solve() -> u64 {
         let mut n = 1_u32; // this is the numerator and remainder
 
         // v will contain ALL the fractional digits
-        let mut v = std::vec::Vec::<u32>::with_capacity(500); // sized large because we can?
+        let mut v = std::vec::Vec::<u32>::with_capacity(1000); // sized large because we can, max is just under 1000
         loop {
             // did we get an even division?
             if n == 0 {
