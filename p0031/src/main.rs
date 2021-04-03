@@ -52,6 +52,9 @@ fn solve() -> u64 {
                             sol += 1;
                             continue;
                         }
+                        // we are left now figuring out how many ways we can combine 2 & 1 to get the remaining value...
+                        sol += 1 + (200-sum5)/CV[6];
+                        /*
                         for c6 in 0..=(200-sum5)/CV[6] {
                             let sum6 = sum5 + c6*CV[6];
                             if sum6 == 200 {
@@ -63,6 +66,7 @@ fn solve() -> u64 {
                                 sol += 1;
                             }
                         }
+                         */
                     }
                 }
             }
