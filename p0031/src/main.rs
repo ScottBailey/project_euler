@@ -14,83 +14,53 @@ How many different ways can £2 be made using any number of coins?
 
 */
 
+const CV : [u64; 8] = [200, 100, 50, 20, 10, 5, 2, 1];
+
 fn solve() -> u64 {
 
-    let mut sol = 1; // for the 2 punund coin
+    let mut sol = 1; // for the 2 pound coin
 
-    for c1 in 0..=200 {
-        let sum1 = c1;
+    //skipping c0
+
+    for c1 in 0..=200/CV[1] {
+        let sum1 = c1*CV[1];
         if sum1 == 200 {
             sol += 1;
             continue;
         }
-        for c2 in 0..=200/2 {
-            let sum2 = sum1 + c2*2;
+        for c2 in 0..=(200-sum1)/CV[2] {
+            let sum2 = sum1 + c2*CV[2];
             if sum2 == 200 {
                 sol += 1;
                 continue;
             }
-            if sum2 > 200 {
-                continue;
-            }
-            for c3 in 0..=200/5 {
-                let sum3 = sum2 + c3*5;
+            for c3 in 0..=(200-sum2)/CV[3] {
+                let sum3 = sum2 + c3*CV[3];
                 if sum3 == 200 {
                     sol += 1;
                     continue;
                 }
-                if sum3 > 200 {
-                    continue;
-                }
-                for c4 in 0..=200/10 {
-                    let sum4 = sum3 + c4*10;
+                for c4 in 0..=(200-sum3)/CV[4] {
+                    let sum4 = sum3 + c4*CV[4];
                     if sum4 == 200 {
                         sol += 1;
                         continue;
                     }
-                    if sum4 > 200 {
-                        continue;
-                    }
-                    for c5 in 0..=200/20 {
-                        let sum5 = sum4 + c5*20;
+                    for c5 in 0..=(200-sum4)/CV[5] {
+                        let sum5 = sum4 + c5*CV[5];
                         if sum5 == 200 {
                             sol += 1;
                             continue;
                         }
-                        if sum5 > 200 {
-                            continue;
-                        }
-                        for c6 in 0..=200/50 {
-                            let sum6 = sum5 + c6*50;
+                        for c6 in 0..=(200-sum5)/CV[6] {
+                            let sum6 = sum5 + c6*CV[6];
                             if sum6 == 200 {
                                 sol += 1;
                                 continue;
                             }
-                            if sum6 > 200 {
-                                continue;
-                            }
-                            for c7 in 0..=200/100 {
-                                let sum7 = sum6 + c7*100;
-                                if sum7 == 200 {
-                                    sol += 1;
-                                    continue;
-                                }
-                                if sum7 > 200 {
-                                    continue;
-                                }
-                                /*
-                                // optimize this out to adding one at the beginning
-                                for c8 in 0..=200/200 {
-                                    let sum8 = sum7 + c8*200;
-                                    if sum8 == 200 {
-                                        sol += 1;
-                                        continue;
-                                    }
-                                    if sum8 > 200 {
-                                        continue;
-                                    }
-                                }
-                                */
+                            // coin 7, the penny is worth 1
+                            {
+                                sol += 1;
                             }
                         }
                     }
@@ -98,7 +68,6 @@ fn solve() -> u64 {
             }
         }
     }
-
     sol
 }
 
