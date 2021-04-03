@@ -12,11 +12,23 @@ It is possible to make £2 in the following way:
 
 How many different ways can £2 be made using any number of coins?
 
+NOTES:
+
+I decided to expirement with itterative vs recursive solutions with
+this problem. I optimized the $2 coin as 1 different way and optimised
+the 0.02 & 0.01 coins as 1 + remain/2.
+
+The recursive solution - which is a bit easier to maintian, I think -
+solved in about 70 us while the iterative solution took just over 30
+us.
+
+solve1() is iterative while solve2() is recursive.
+
 */
 
 const CV : [u64; 8] = [200, 100, 50, 20, 10, 5, 2, 1];
 
-fn solve() -> u64 {
+fn solve1() -> u64 {
 
     let mut sol = 1; // for the 2 pound coin
 
@@ -76,10 +88,26 @@ fn solve() -> u64 {
 }
 
 
+fn solve2() -> u64 {
+    solve_i(1,200) + 1
+}
+
+fn solve_i(index : usize, remain : u64) -> u64 {
+    if index == 6 {
+        return 1 + remain/CV[index];
+    }
+    let mut rv = 0;
+    for i in 0..=remain/CV[index] {
+        rv += solve_i(index+1, remain-i*CV[index]);
+    }
+    rv
+}
+
+
 fn main() {
     let start_time = std::time::Instant::now();
 
-    let sol = solve();
+    let sol = solve1();
 
     let elapsed = start_time.elapsed().as_micros();
     println!("\nSolution: {}", sol);
