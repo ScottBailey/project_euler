@@ -55,7 +55,7 @@ fn solve() -> u64 {
                     let d4 = d0*10 + d1;
 
                     if fraction::GenericFraction::<u64>::new(n4,d4) == fraction::GenericFraction::<u64>::new(n3,d3) {
-                        println!("{}/{}", n4,d4);
+                        //println!("{}/{}", n4,d4);
                         sol_n *= n4;
                         sol_d *= d4;
                     }
@@ -65,9 +65,9 @@ fn solve() -> u64 {
     }
 
     let sol = fraction::GenericFraction::<u64>::new(sol_n, sol_d);
-    println!("{}",sol);
+    //println!("{}", sol);
 
-    0
+    *sol.denom().unwrap()
 }
 
 
