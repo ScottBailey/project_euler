@@ -116,9 +116,11 @@ fn solve() -> u64 {
     let v = make_singledigits();
 
     for c in &v {
-        if *c >= 100_000 {
-            break;
+        // don't test small number
+        if *c < 1000 {
+            continue;
         }
+        // large numbers aren't actually in the list, so no need to test for them
         let max = (*c as f64).sqrt() as u64;
         for a in &v {
             if *a > max {
