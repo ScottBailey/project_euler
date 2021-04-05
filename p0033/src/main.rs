@@ -31,7 +31,7 @@ fn solve() -> u64 {
     // numerator
     for n0 in 1..=9 as u64{
         for n1 in 1..=9 as u64 {
-            // denominator
+            // denominator @NOTE: converting denominator to twin loops piined to n0 and n1 is not a speedup
             for d0 in n0..=9 as u64 {
                 for d1 in 1..=9 as u64 {
                     if n0 == d0 && n1 == d1 {
