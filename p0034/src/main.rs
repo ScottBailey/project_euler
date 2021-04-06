@@ -19,11 +19,12 @@ NOTES:
 fn solve() -> u64 {
 
     // factorials for digits 0 to 9
-    //           0      1  2  3   4    5    6     7      8       9
-    let v = vec![1_u64, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880];
-    let max = 7*v[9];
+    //                   0  1  2  3   4    5    6     7      8       9
+    let v : [u64; 10] = [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880];
+    let max = 7*v[9]; // set an upper limit
 
     let mut rv = 0;
+
     let mut n = vec![0_u64, 1];
     loop {
         let mut sum = 0;
