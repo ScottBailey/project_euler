@@ -25,39 +25,17 @@ fn solve() -> u64 {
 
     let mut rv = 0;
 
-    // n is, basically, a BCD with the lowest value first.
-    let mut n = vec![0_u64, 1];  // this is 10
-    loop {
+    for val in 10..max {  // values below 10 are not summed (e.g. 1, 2)
         let mut sum = 0;  // sum of the factorials of the individual digits
-        let mut val = 0;  // convert n - the reverse BCD - into a value
-        for i in n.iter().rev() {
-            val *= 10;
-            val += i;
-            sum += factorial[*i as usize];
+        let mut n = val;  // temp for finding individual digits
+        while n > 0 {
+            sum += factorial[ (n%10) as usize];
+            n /= 10;
         }
 
-        if val == max {  // test the exit condition
-            break;
-        }
         if val == sum { // test for our magic number!
             rv += val;
-            println!("{} {}, {}", val, sum, rv);
-        }
-
-        // increment n
-        let mut i = 0;
-        loop {
-            if i < n.len() {
-                n[i] += 1;
-            }
-            else {
-                n.push(1);
-            }
-            if n[i] < 10 {
-                break;
-            }
-            n[i] = 0;
-            i += 1;
+            //println!("{} {}, {}", val, sum, rv);
         }
     }
 
