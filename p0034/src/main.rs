@@ -20,31 +20,31 @@ fn solve() -> u64 {
 
     // factorials for digits 0 to 9
     //                   0  1  2  3   4    5    6     7      8       9
-    let v : [u64; 10] = [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880];
-    let max = 7*v[9]; // set an upper limit
+    let factorial : [u64; 10] = [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880];
+    let max = 7 * factorial[9]; // set an upper limit
 
     let mut rv = 0;
 
-    let mut n = vec![0_u64, 1];
+    // n is, basically, a BCD with the lowest value first.
+    let mut n = vec![0_u64, 1];  // this is 10
     loop {
-        let mut sum = 0;
-        let mut val = 0;
+        let mut sum = 0;  // sum of the factorials of the individual digits
+        let mut val = 0;  // convert n - the reverse BCD - into a value
         for i in n.iter().rev() {
             val *= 10;
             val += i;
-            sum += v[*i as usize];
+            sum += factorial[*i as usize];
         }
 
-        if val == max {
+        if val == max {  // test the exit condition
             break;
         }
-        if val == sum {
+        if val == sum { // test for our magic number!
             rv += val;
             println!("{} {}, {}", val, sum, rv);
         }
-        else {
-            //println!("{} {}", val, sum);
-        }
+
+        // increment n
         let mut i = 0;
         loop {
             if i < n.len() {
