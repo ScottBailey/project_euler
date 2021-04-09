@@ -22,51 +22,75 @@ where n > 1?
 
 NOTES:
 
-Look at this:
-Lets add a pandigital trait for u64 & u32?
-Also, could we add a concatenate trait to u64?
-what about pop_left()? pop_right()? push_left()? push_right()?
-
-    trait IsPandigital {
-        fn is_pandigital(&self) -> bool;
-    }
-
-    impl IsPandigital for u64 {
-        fn is_pandigital(&self) -> bool {
-            let mut is_found = [false; 9];
-            let mut mask = 1;
-            for _ in 0..9 {
-                let digit = *self / mask % 10;
-                if digit == 0 {
-                    return false;
-                }
-                if is_found[digit as usize - 1] {
-                    return false;
-                }
-                is_found[digit as usize - 1] = true;
-                mask *= 10;
-            }
-            true
-        }
-    }
-
-
 */
 
-// n is a string containing ONLY digits 0-9 and is 9 chars long
-fn is_pandigital(m : & String) -> bool {
-    let mut v = [false; 10];
-    let n = m.as_bytes();
-    v[ (n[0_usize ]-b'0') as usize ] = true;
-    v[ (n[1_usize ]-b'0') as usize ] = true;
-    v[ (n[2_usize ]-b'0') as usize ] = true;
-    v[ (n[3_usize ]-b'0') as usize ] = true;
-    v[ (n[4_usize ]-b'0') as usize ] = true;
-    v[ (n[5_usize ]-b'0') as usize ] = true;
-    v[ (n[6_usize ]-b'0') as usize ] = true;
-    v[ (n[7_usize ]-b'0') as usize ] = true;
-    v[ (n[8_usize ]-b'0') as usize ] = true;
-    return v[1] && v[2] && v[3] && v[4] && v[5] && v[6] && v[7] && v[8] && v[9];
+
+trait IsPandigital {
+    fn is_pandigital(&self) -> bool;
+}
+impl IsPandigital for u64 {
+    fn is_pandigital(&self) -> bool {
+        let mut v = [false; 10];
+        let mut n = *self;
+        let mut count = 0;
+        while n > 0 {
+            count += 1;
+            v[ (n%10) as usize ] = true;
+            n /= 10;
+        }
+        return count == 9 && v[1] && v[2] && v[3] && v[4] && v[5] && v[6] && v[7] && v[8] && v[9];
+    }
+}
+#[test]
+fn test_pandigital() {
+    assert!(123456789_u64.is_pandigital());
+    assert!(!123456780_u64.is_pandigital());
+    assert!(!1234567891_u64.is_pandigital());
+    assert!(!23456789_u64.is_pandigital());
+}
+
+
+trait Concatenate {
+    fn concatenate(&mut self, other : Self) -> Self;
+}
+impl Concatenate for u64 {
+    fn concatenate(&mut self, other : Self) -> Self {
+        let mut temp = 10;
+        while temp <= other {
+            temp *= 10;
+        }
+        *self *= temp;
+        *self += other;
+        *self
+    }
+}
+#[test]
+fn test_concatenate() {
+    assert!(0_u64.concatenate(10) == 10);
+    assert!(9_u64.concatenate(10) == 910);
+}
+
+
+trait DigitCount {
+    fn digit_count(&self) -> usize;
+}
+impl DigitCount for u64 {
+    fn digit_count(&self) -> usize {
+        let mut rv = 1_usize;
+        let mut temp = 10;
+        while temp <= *self {
+            rv += 1;
+            temp *= 10;
+        }
+        rv
+    }
+}
+#[test]
+fn test_len() {
+    assert!(0_u64.digit_count() == 1);
+    assert!(9_u64.digit_count() == 1);
+    assert!(10_u64.digit_count() == 2);
+    assert!(345_u64.digit_count() == 3);
 }
 
 
@@ -74,19 +98,18 @@ fn solve() -> u64 {
     let mut max = 0;
 
     for n in 1..10_000_u64 { // max n is a 4 digit number + a 5 digit number, 10,000 results in 2 5 digit numbers
-        let mut s = String::with_capacity(20);
+        let mut sol = 0_u64;
         for i in 1_u64.. {
-            s += &(n*i).to_string();
-            if s.len() == 9 {
-                if is_pandigital(&s) {
-                    let temp : u64 = s.parse().unwrap();
-                    if temp > max {
-                        max = temp;
+            sol.concatenate(n*i);
+            if sol.digit_count() == 9 {
+                if sol.is_pandigital() {
+                    if sol > max {
+                        max = sol;
                     }
                     break;
                 }
             }
-            if s.len() > 10 {
+            if sol.digit_count() > 10 {
                 break;
             }
         }
@@ -104,7 +127,10 @@ fn main() {
     let elapsed = start_time.elapsed().as_micros();
     println!("\nSolution: {}", sol);
 
-    //println!("Elasped time: {} us", elapsed);
+    if sol != 932718654 {
+        panic!("expected {}",932718654);
+    }
+
 
     let mut remain = elapsed;
     let mut s = String::new();
