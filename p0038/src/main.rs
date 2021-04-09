@@ -55,7 +55,7 @@ what about pop_left()? pop_right()? push_left()? push_right()?
 
 // n is a string containing ONLY digits 0-9 and is 9 chars long
 fn is_pandigital(m : & String) -> bool {
-    let mut v : [false; 10];
+    let mut v = [false; 10];
     let n = m.as_bytes();
     v[ (n[0_usize ]-b'0') as usize ] = true;
     v[ (n[1_usize ]-b'0') as usize ] = true;
