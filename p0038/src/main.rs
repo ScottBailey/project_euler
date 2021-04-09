@@ -101,7 +101,8 @@ fn solve() -> u64 {
         let mut sol = 0_u64;
         for i in 1_u64.. {
             sol.concatenate(n*i);
-            if sol.digit_count() == 9 {
+            let dc = sol.digit_count();
+            if dc == 9 {
                 if sol.is_pandigital() {
                     if sol > max {
                         max = sol;
@@ -109,7 +110,7 @@ fn solve() -> u64 {
                     break;
                 }
             }
-            if sol.digit_count() > 10 {
+            if dc > 10 {
                 break;
             }
         }
