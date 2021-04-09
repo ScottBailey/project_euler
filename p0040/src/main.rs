@@ -15,21 +15,37 @@ of the following expression.
 
 d1 × d10 × d100 × d1000 × d10000 × d100000 × d1000000
 
+NOTES:
+
+I use a Vec::<u32> (v) to receive Champernowne's constant. Then I use
+another Vec (n) to hold the current number. Until v achieves the
+necessary length, extends v with n and increment n. While memory
+inefficient, it's easy to write and understand.
+
 */
 
 
-fn solve() -> u64 {
-    let mut s = String::with_capacity(10_000_020);
-    let mut n = 0_u64;
-    while s.len() <= 1_000_000 {
-        s += &n.to_string();
-        n += 1;
+fn increment(v : &mut Vec::<u32>) {
+    for n in v.iter_mut().rev() {
+        if *n < 9 {
+            *n += 1;
+            return;
+        }
+        *n = 0;
+    }
+    v.insert(0,1);
+}
+
+fn solve() -> u32 {
+    let mut v = Vec::<u32>::with_capacity(10_000_020);
+    let mut n = Vec::<u32>::with_capacity(32);
+    n.push(0);
+    while v.len() <= 1_000_000 {
+        v.extend(&n);
+        increment(&mut n);
     }
 
-    let v = s.as_bytes();
-    (v[1]-b'0') as u64 * (v[10]-b'0') as u64 * (v[100]-b'0') as u64
-        * (v[1_000]-b'0') as u64 * (v[10_000]-b'0') as u64 *
-        (v[100_000]-b'0') as u64 * (v[1_000_000]-b'0') as u64
+    v[1] * v[10] * v[100] * v[1000] * v[10_000] * v[100_000] * v[1_000_000]
 }
 
 
