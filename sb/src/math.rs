@@ -41,6 +41,36 @@ pub fn is_prime(n : u64) -> bool {
 
 
 #[allow(dead_code)]
+pub fn prime_next(v : & mut Vec<u64>) {
+
+    if v.is_empty() {
+        v.push(2);
+        return;
+    }
+
+    if v.len() == 1 {
+        v.push(3);
+        return;
+    }
+
+    let mut test = *v.last().unwrap();
+    loop {
+        test += 2;
+        let sqrt = (test as f64).sqrt() as u64;
+        for n in v.iter() {
+            if *n > sqrt {
+                v.push(test);
+                return;
+            }
+            if test%n == 0 {
+                break;
+            }
+        }
+    }
+}
+
+
+#[allow(dead_code)]
 pub fn prime_to(m : u64) -> std::vec::Vec<u64> {
     let mut v = std::vec::Vec::new();
     v.reserve((m/5) as usize);
