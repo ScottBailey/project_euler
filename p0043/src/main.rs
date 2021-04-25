@@ -57,8 +57,40 @@ fn test_pandigital() {
     assert!(1234567890_u64.is_pandigital());
     assert!(12345_u64.is_pandigital());
     assert!(!12645_u64.is_pandigital());
+    assert!(!2345_u64.is_pandigital());
     assert!(!1234567891_u64.is_pandigital());
     assert!(!234560789_u64.is_pandigital());
+}
+
+
+trait IsUniqueDigits {
+    fn is_uniquedigits(&self) -> bool;
+}
+impl IsUniqueDigits for u64 {
+    fn is_uniquedigits(&self) -> bool {
+        let mut v = [0_usize; 10];
+        let mut n = *self;
+        while n > 0 {
+            v[ (n%10) as usize ] += 1;
+            n /= 10;
+        }
+        for count in v.iter() {
+            if *count > 1 {
+                return false;
+            }
+        }
+        true
+    }
+}
+#[test]
+fn test_uniquedigits() {
+    assert!(123456789_u64.is_uniquedigits());
+    assert!(1234567890_u64.is_uniquedigits());
+    assert!(12345_u64.is_uniquedigits());
+    assert!(12645_u64.is_uniquedigits());
+    assert!(2345_u64.is_uniquedigits());
+    assert!(!1234567891_u64.is_uniquedigits());
+    assert!(!12345607890_u64.is_uniquedigits());
 }
 
 
