@@ -65,6 +65,7 @@ fn test_pandigital() {
 
 trait IsUniqueDigits {
     fn is_uniquedigits(&self) -> bool;
+    fn is_uniquedigits_count(&self, expect: usize) -> bool;
 }
 impl IsUniqueDigits for u64 {
     fn is_uniquedigits(&self) -> bool {
@@ -81,6 +82,29 @@ impl IsUniqueDigits for u64 {
         }
         true
     }
+
+    fn is_uniquedigits_count(&self, expect : usize) -> bool {
+        let mut v = [0_usize; 10];
+        let mut n = *self;
+        while n > 0 {
+            v[ (n%10) as usize ] += 1;
+            n /= 10;
+        }
+        let mut digits = 0;
+        for count in v.iter() {
+            if *count > 1 {
+                return false;
+            }
+            digits += count;
+        }
+        if digits == expect {
+            return true;
+        }
+        if digits == (expect - 1) && v[0] == 0 {
+            return true;
+        }
+        false
+    }
 }
 #[test]
 fn test_uniquedigits() {
@@ -92,10 +116,71 @@ fn test_uniquedigits() {
     assert!(!1234567891_u64.is_uniquedigits());
     assert!(!12345607890_u64.is_uniquedigits());
 }
+#[test]
+fn test_uniquedigits_count() {
+    assert!(123_u64.is_uniquedigits_count(3));
+    assert!(!123_u64.is_uniquedigits_count(2));
+    assert!(123_u64.is_uniquedigits_count(4));
+    assert!(!123_u64.is_uniquedigits_count(5));
+    assert!(!100_u64.is_uniquedigits_count(3));
+    assert!(102_u64.is_uniquedigits_count(3));
+}
 
 
 fn solve() -> u64 {
-    0
+    let mut rv = 0;
+
+    let mut v234 = Vec::new();  // divisible by 2
+    for i in (12..1000).step_by(2) {
+        if i.is_uniquedigits_count(3) {
+            v234.push(i * 1_000_000);
+        }
+    }
+
+    let mut v567 = Vec::new();  // divisible by 7
+    for i in (14..1000).step_by(7) {
+        if i.is_uniquedigits_count(3) {
+            v567.push(i);
+        }
+    }
+
+    let mut v890 = Vec::new();  // divisible by 17
+    for i in (17..1000).step_by(17) {
+        if i.is_uniquedigits_count(3) {
+            v890.push(i * 1_000);
+        }
+    }
+
+    for c in &v890 {
+        for b in &v567 {
+            let bc = b + c;
+            if !bc.is_uniquedigits_count(6) {
+                continue;
+            }
+            if (bc / 10 % 13) > 0 {
+                continue;
+            }
+            if (bc / 100 % 11) > 0 {
+                continue;
+            }
+            for a in &v234 {
+                let abc = a + bc;
+                if !abc.is_uniquedigits_count(9) {
+                    continue;
+                }
+                if (abc / 1_000 % 5) > 0 {
+                    continue;
+                }
+                if (abc / 10_000 % 3) > 0 {
+                    continue;
+                }
+                println!("{}", abc);
+                rv += 1;
+            }
+        }
+    }
+
+    rv
 }
 
 
