@@ -118,7 +118,7 @@ fn test_uniquedigits() {
 }
 #[test]
 fn test_uniquedigits_count() {
-    assert!(123_u64.is_uniquedigits_count(3));
+    assert!(357_u64.is_uniquedigits_count(3));
     assert!(!123_u64.is_uniquedigits_count(2));
     assert!(123_u64.is_uniquedigits_count(4));
     assert!(!123_u64.is_uniquedigits_count(5));
@@ -140,42 +140,67 @@ fn solve() -> u64 {
     let mut v567 = Vec::new();  // divisible by 7
     for i in (14..1000).step_by(7) {
         if i.is_uniquedigits_count(3) {
-            v567.push(i);
+            v567.push(i * 1_000);
         }
     }
 
     let mut v890 = Vec::new();  // divisible by 17
     for i in (17..1000).step_by(17) {
         if i.is_uniquedigits_count(3) {
-            v890.push(i * 1_000);
+            v890.push(i);
         }
     }
 
     for c in &v890 {
         for b in &v567 {
             let bc = b + c;
+            let debug = bc == 357289;
+            if debug { println!("testing: {}",bc); }
             if !bc.is_uniquedigits_count(6) {
+                if debug { println!("1"); }
                 continue;
             }
-            if (bc / 10 % 13) > 0 {
+            if (bc / 10 % 1000 % 13) > 0 {
+                if debug { println!("2"); }
                 continue;
             }
-            if (bc / 100 % 11) > 0 {
+            if (bc / 100 % 1000 % 11) > 0 {
+                if debug { println!("3"); }
                 continue;
             }
+            if debug { println!("good: {}",bc); }
             for a in &v234 {
                 let abc = a + bc;
+                let debug = abc == 406357289;
                 if !abc.is_uniquedigits_count(9) {
+                    if debug { println!("4"); }
                     continue;
                 }
-                if (abc / 1_000 % 5) > 0 {
+                if (abc / 10_000 % 1_000 % 5) > 0 {
+                    if debug { println!("5 : {}", abc / 10_000 % 1000); }
                     continue;
                 }
-                if (abc / 10_000 % 3) > 0 {
+                if (abc / 100_000 % 1000 % 3) > 0 {
+                    if debug { println!("6 : {}", abc / 100_000); }
                     continue;
                 }
-                println!("{}", abc);
-                rv += 1;
+                if debug { println!("YES!"); }
+
+                let mut v = [false; 10];
+                let mut n = abc;
+                while n > 0 {
+                    v[ (n%10) as usize ] = true;
+                    n /= 10;
+                }
+                for i in 1..10 {
+                    if v[i] == false {
+                        let val = abc + (1_000_000_000 * i as u64);
+                        println!("{}", val);
+                        rv += val;
+                        break;
+                    }
+                }
+
             }
         }
     }
