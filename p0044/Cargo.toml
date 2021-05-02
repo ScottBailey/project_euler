@@ -1,0 +1,13 @@
+[package]
+name = "p0044"
+version = "0.1.0"
+authors = ["Scott Bailey <Scott@BaileyBuilt.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+#sb = { path = "../sb" }
+#fraction = "0.8.0"
+#num-bigint = "0.4"
+#itertools = "0.10"
