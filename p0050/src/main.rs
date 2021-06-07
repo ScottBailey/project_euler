@@ -22,10 +22,8 @@ NOTES:
 
 fn solve() -> u64 {
 
-    // get all the primes 4 digit and below
-    let primes = sb::math::prime_to(1_000_000);
-
     const MAX : u64 = 1_000_000;  // test with 100 and 1000
+    let primes = sb::math::prime_to(MAX); // get all the primes to MAX
 
     let mut rv = 0;
     let mut rv_count = 0;
