@@ -12,23 +12,13 @@ NOTES:
 
 */
 
-fn order_digits(mut n : u64) -> u64 {
-
-    let mut digits = Vec::new();
-    digits.reserve(10);
-
-    while n > 0 {
-        digits.push( n%10 );
-        n /= 10;
-    }
-
-    // reverse sort so 0s are to the right (i.e. 2020 becomes 2200, instead of 0022, aka 22)
-    digits.sort_by(|a, b| b.cmp(a));
+fn count_digits(mut n : u64) -> u64 {
 
     let mut rv = 0;
-    for i in digits {
-        rv *= 10;
-        rv += i;
+
+    while n > 0 {
+        rv += 1 << (n%10)*4;
+        n /= 10;
     }
 
     rv
@@ -42,20 +32,20 @@ fn solve() -> u64 {
 
         n += 1;
 
-        let target = order_digits(n);
-        if target != order_digits(n*2) {
+        let target = count_digits(n);
+        if target != count_digits(n*2) {
             continue;
         }
-        if target != order_digits(n*3) {
+        if target != count_digits(n*3) {
             continue;
         }
-        if target != order_digits(n*4) {
+        if target != count_digits(n*4) {
             continue;
         }
-        if target != order_digits(n*5) {
+        if target != count_digits(n*5) {
             continue;
         }
-        if target != order_digits(n*6) {
+        if target != count_digits(n*6) {
             continue;
         }
 
