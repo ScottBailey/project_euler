@@ -80,43 +80,62 @@ fn solve() -> u64 {
         panic!("Unexpectedly, MIN ({}) is a prime!",MIN);
     }
 
-    // for every prime...
+    // for every prime in range MIN..=MAX
     for num in &primes {
 
         // convert the digits into a vector
-        let digits = num.to_vec();
-        let mut crit = 99; // storage for the critical digit
-
-        // count the instances of a given number occuring
-        let mut v = [0_u64; 10];
-        for n in &digits {
-            v[*n as usize] += 1;
-        }
-        // store the digit
-        for (i, count) in v.iter().enumerate() {
-            if count >= &3 {
-                crit = i as u64;
-                break;
+        let mut digits = Vec::<u64>::new();
+        { // scope for n and other opreations on digits
+            digits.reserve(6);
+            let mut n = *num;
+            while n > 0 {
+                digits.push( n%10 );
+                n /= 10;
             }
         }
-        // if we didn't find the digit, go on to the next prime
-        if crit > 9 {
+
+        // storage for critical digit
+        let mut crit = None;
+
+        // count the instances of a given number occuring
+        {
+            let mut v = [0_u64; 10];
+            for n in &digits {
+                v[*n as usize] += 1;
+            }
+            // store the digit
+            for (i, count) in v.iter().enumerate() {
+                if count >= &3 {
+                    crit = Some( i as u64 );
+                    break;
+                }
+            }
+        }
+
+        if let Some(x) = crit {
+            // we found a repeated digit that is too large, go on to the next prime
+            if x > 2 {
+                continue;
+            }
+        }
+        else {
+            // if we didn't find enough repeated digits, go on to the next prime
             continue;
         }
 
-        let debug = *num == 56003;
 
-        let mut fails = 0;
-        let mut found = 1; // num is already found...
-        for i in 0..10_u64 {
-            if i == crit {
-                // already found this one...
-                continue;
-            }
+        // We failed any number below crit, (i.e. if crit is 2 then 0 and 1 were already tested and failed).
+        let mut fails = crit.unwrap();
+
+        // Replace critical with all the possible digits [crit+1 to 9]
+        for i in (crit.unwrap()+1)..10_u64 {
             let mut val = 0;
+            // iterate over the digits in this prime number, whe we find a critical, replace it with i
+            //   For example, if num is 10007, then crit is 0.
+            //   On the first pass, i = 1 and all the 0s are replaced with 1s, resulting in val = 11117
             for j in digits.iter().rev() {
                 val *= 10;
-                if *j == crit {
+                if *j == crit.unwrap() {
                     val += i;
                 }
                 else {
@@ -124,19 +143,21 @@ fn solve() -> u64 {
                 }
             }
 
-            if let Ok(_) = primes.binary_search(&val) {
-                found += 1;
-                if debug { println!("{} - {}",&num, val); }
-            }
-            else {
+            // search for val in the primes
+            if let Err(_) = primes.binary_search(&val) {
+                // Didn't find val, increment fail count and exit if
+                // we've enough fails that num can no longer be the
+                // solution.
                 fails += 1;
+                if fails == 3 {
+                    break;
+                }
             }
-            if found == 8 {
-                return *num;
-            }
-            if fails == 3 {
-                break;
-            }
+        }
+
+        // If we have 8 successes, return the current prime
+        if fails < 3 {
+            return *num;
         }
     }
 
