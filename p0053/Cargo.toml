@@ -9,5 +9,5 @@ edition = "2018"
 [dependencies]
 #sb = { path = "../sb" }
 #fraction = "0.8.0"
-num-bigint = "0.4"
+#num-bigint = "0.4"
 #itertools = "0.10"
