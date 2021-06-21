@@ -22,17 +22,16 @@ NOTES:
 
 */
 
-use num_bigint::BigUint;
 
 fn solve() -> u64 {
 
-    let mut factorial = Vec::<BigUint>::with_capacity(101);
+    let mut factorial = Vec::<f64>::with_capacity(101);
     {
         // load factorial with all the values from 0 to 100
-        factorial.push(BigUint::from(1_u64)); // this is 0!
+        factorial.push(1_f64); // this is 0!
         let mut n = 1_u64;
         while n <= 100 {
-            factorial.push(factorial.last().unwrap().clone() * n);
+            factorial.push(factorial.last().unwrap() * (n as f64));
             n += 1;
         }
     }
@@ -42,8 +41,8 @@ fn solve() -> u64 {
     // nCr for n in [1,100], r <= n
     for n in 1..=100 {
         for r in 1..=n {
-            let result = factorial[n].clone() / (factorial[r].clone() * factorial[n-r].clone());
-            if result > BigUint::from(1_000_000_u64) {
+            let result = factorial[n] / (factorial[r] * factorial[n-r]);
+            if result > 1_000_000_f64 {
                 rv += 1;
             }
         }
