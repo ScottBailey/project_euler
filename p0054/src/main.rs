@@ -70,8 +70,20 @@ struct Card {
     suit : u8,
 }
 
+
+impl PartialEq for Card
+{
+    fn eq(&self, other: &Self) -> bool {
+        self.rank == other.rank
+    }
+}
+
+
 fn make_card(rank : u8, suit : u8) -> Card {
     let mut rv = Card { rank: 0, suit: 0 };
+
+    const TWO : char = 2 as char;
+    const FOURTEEN : char = 14 as char;
     match rank as char {
         '2'..='9' => rv.rank = rank as u8 - '0' as u8,
         'T' => rv.rank = 10,
@@ -79,150 +91,236 @@ fn make_card(rank : u8, suit : u8) -> Card {
         'Q' => rv.rank = 12,
         'K' => rv.rank = 13,
         'A' => rv.rank = 14,
+        (TWO ..= FOURTEEN) => rv.rank = rank,
         _ => panic!("Unexpected rank: {}", rank),
     }
+
+    const ONE : char = 1 as char;
+    const FOUR : char = 4 as char;
     match suit as char {
         'C' => rv.suit = 1,
         'D' => rv.suit = 2,
         'H' => rv.suit = 3,
         'S' => rv.suit = 4,
+        (ONE ..= FOUR) => rv.suit = suit,
         _ => panic!("Unexpected suit: {}", suit),
     }
     rv
 }
 
 
-trait PokerHand {
-    fn is_royal_flush(&self) -> bool;
-    fn is_straight_flush(&self) -> bool;
-    fn is_four(&self) -> bool;
-    fn is_full_house(&self) -> bool;
-    fn is_flush(&self) -> bool;
-    fn is_straight(&self) -> bool;
-    fn is_three(&self) -> bool;
-    fn is_two_pair(&self) -> bool;
-    fn is_pair(&self) -> bool;
-
-    fn high_card(&self) -> u8;
+#[derive(Debug)]
+enum Rank {
+    HighCard{ rank: Vec::<u8> }, // rank[0] is high card, followed by remaining card ranks in descending order
+    Pair{ rank: Vec::<u8>  },    // rank[0] is pair cards, followed by remaining card ranks in descending order
+    TwoPair{ rank: Vec::<u8> },  // rank[0] is high pair cards, rank[1] is low pair cards, rank[3] is remaining singleton
+    Three{ rank : Vec::<u8> },   // rank[0] is 3 of a kind cards, followed by remaining card ranks in descending order
+    Straight{ rank: u8 },        // rank is high card, no other values
+    Flush{ rank: Box<Rank> },    // card_rank is the next rank below (i.e. 3kind, 2pair, pair, high card)
+    FullHouse{ rank: Vec::<u8> },// rank[0] is three cards, rank[1] is pair cards
+    Four{ rank: Vec::<u8> },     // rank[0] is four cards, rank[1] is remaining singleton
+    StraightFlush{ rank: u8 },   // rank is high card, no other values
+    RoyalFlush,                  // no values
 }
 
-impl PokerHand for Vec::<Card> {
+trait RankHand {
+    fn rank(&self) -> Rank;
+}
 
-    fn high_card(&self) -> u8 {
-        let mut rv = 0;
-        for c in self {
-            if c.rank > rv {
-                rv = c.rank;
-            }
+#[test]
+fn test_rank() {
+
+    let hand_rf1 : Vec::<Card> = vec![ make_card(14, 1), make_card(13, 1), make_card(12, 1), make_card(11, 1), make_card(10,1) ];
+    let hand_rf2 : Vec::<Card> = vec![ make_card(14, 2), make_card(13, 2), make_card(12, 2), make_card(11, 2), make_card(10,2) ];
+
+    let hand_straight_ace : Vec::<Card> = vec![ make_card(14, 2), make_card(13, 1), make_card(12, 1), make_card(11, 1), make_card(10,1) ];
+    let hand_straight_king : Vec::<Card> = vec![ make_card(13, 1), make_card(12, 1), make_card(11, 1), make_card(10,1), make_card(9,3) ];
+
+    assert!(hand_rf1.rank() == hand_rf2.rank());
+
+    println!("{:?}", hand_rf1.rank());
+    println!("{:?}", hand_straight_ace.rank());
+
+    assert!(hand_rf1.rank() != hand_straight_ace.rank());
+    assert!(hand_straight_king.rank() != hand_straight_ace.rank());
+}
+
+
+impl PartialEq for Rank {
+
+    fn eq(&self, other: &Self) -> bool {
+
+        match self {
+
+            Rank::HighCard { rank : self_rank } => {
+                if let Rank::HighCard { rank : other_rank } = other {
+                    return self_rank == other_rank;
+                }
+                else {
+                    return false;
+                }
+            },
+
+            Rank::Pair { rank : self_rank } => {
+                if let Rank::Pair { rank : other_rank } = other {
+                    return self_rank == other_rank;
+                }
+                else {
+                    return false;
+                }
+            },
+
+            Rank::TwoPair { rank : self_rank } => {
+                if let Rank::TwoPair { rank : other_rank } = other {
+                    return self_rank == other_rank;
+                }
+                else {
+                    return false;
+                }
+            },
+
+            Rank::Three { rank : self_rank } => {
+                if let Rank::Three { rank : other_rank } = other {
+                    return self_rank == other_rank;
+                }
+                else {
+                    return false;
+                }
+            },
+
+            Rank::Straight { rank : self_rank } => {
+                if let Rank::Straight { rank : other_rank } = other {
+                    return self_rank == other_rank;
+                }
+                else {
+                    return false;
+                }
+            },
+
+            Rank::Flush { rank : self_rank } => {
+                if let Rank::Flush { rank : other_rank } = other {
+                    return self_rank == other_rank;
+                }
+                else {
+                    return false;
+                }
+            },
+
+            Rank::FullHouse { rank : self_rank } => {
+                if let Rank::FullHouse { rank : other_rank } = other {
+                    return self_rank == other_rank;
+                }
+                else {
+                    return false;
+                }
+            },
+
+            Rank::Four { rank : self_rank } => {
+                if let Rank::Four { rank : other_rank } = other {
+                    return self_rank == other_rank;
+                }
+                else {
+                    return false;
+                }
+            },
+
+            Rank::StraightFlush { rank : self_rank } => {
+                if let Rank::StraightFlush { rank : other_rank } = other {
+                    return self_rank == other_rank;
+                }
+                else {
+                    return false;
+                }
+            },
+
+            Rank::RoyalFlush => {
+                if let Rank::RoyalFlush = other {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            },
+
         }
-        rv
     }
 
-    fn is_flush(&self) -> bool {
+}
+
+
+/*
+impl PartialEq for Vec::<Card> {
+
+    fn eq(&self, other: &Self) -> bool {
+
+    }
+
+}
+ */
+
+
+impl RankHand for Vec::<Card> {
+
+    fn rank(&self) -> Rank {
+
+        // test for flush
+        let mut is_flush = true;
         let suit = self[0].suit;
         for i in 1..self.len() {
             if self[i].suit != suit {
-                return false;
+                is_flush = false;
+                break;
             }
         }
-        true
-    }
 
-    fn is_four(&self) -> bool {
-        let mut v = [0_u32; 15];
+        // rank cards, test for straight
+        let mut ranked = Vec::<u8>::with_capacity(self.len());
         for c in self {
-            v[c.rank as usize] += 1;
+            ranked.push(c.rank);
         }
-        for n in v {
-            if n == 4 {
-                return true;
+        ranked.sort();
+        ranked.dedup();
+        let mut is_straight = true;
+        if ranked.len() != self.len() {
+            is_straight = false;
+        }
+        else {
+            let mut r = ranked[0];
+            for i in 1..ranked.len() {
+                r += 1;
+                if ranked[i] != r {
+                    is_straight = false;
+                    break;
+                }
             }
         }
-        false
-    }
 
-    fn is_full_house(&self) -> bool {
-        let mut v = [0_u32; 15];
+        // If it's a straight, decide on the flavor (Straight, StraightFlush, or RoyalFlush) and return.
+        if is_straight {
+            let high_card = ranked.last().unwrap();
+            if is_flush {
+                if *high_card == 14_u8 { // ace
+                    return Rank::RoyalFlush;
+                }
+                return Rank::StraightFlush { rank : *high_card };
+            }
+            return Rank::Straight { rank : *high_card };
+        }
+
+
+        // Test for rank multiples
+        let mut multiples = [0_u32; 15];
         for c in self {
-            v[c.rank as usize] += 1;
+            multiples[c.rank as usize] += 1;
         }
-        let mut crit = 0;
-        for n in v {
-            if n == 3 {
-                crit += 1;
-            }
-            else if n == 2 {
-                crit += 1;
-            }
-        }
-        crit == 2
-    }
 
-    fn is_pair(&self) -> bool {
-        let mut v = [0_u32; 15];
-        for c in self {
-            v[c.rank as usize] += 1;
-        }
-        for n in v {
-            if n == 2 {
-                return true;
-            }
-        }
-        false
-    }
-
-    fn is_royal_flush(&self) -> bool {
-        self.high_card() == 14 && self.is_straight_flush()
-    }
-
-    fn is_straight(&self) -> bool {
-        let mut v = Vec::<u8>::with_capacity(self.len());
-        for c in self {
-            v.push(c.rank);
-        }
-        v.sort();
-        let mut rank = v[0];
-        for i in 1..v.len() {
-            rank += 1;
-            if v[i] != rank {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    fn is_straight_flush(&self) -> bool {
-        self.is_flush() &&  self.is_straight()
-    }
-
-    fn is_three(&self) -> bool {
-        let mut v = [0_u32; 15];
-        for c in self {
-            v[c.rank as usize] += 1;
-        }
-        for n in v {
-            if n == 3 {
-                return true;
-            }
-        }
-        false
-    }
-
-    fn is_two_pair(&self) -> bool {
-        let mut v = [0_u32; 15];
-        for c in self {
-            v[c.rank as usize] += 1;
-        }
-        let mut crit = 0;
-        for n in v {
-            if n == 2 {
-                crit += 1;
-            }
-        }
-        crit == 2
+        panic!("not completed yet!");
     }
 
 }
+
+
+
 
 
 
@@ -278,6 +376,7 @@ fn solve() -> u64 {
 
 
 fn main() {
+
     let start_time = std::time::Instant::now();
 
     let sol = solve();
@@ -301,26 +400,4 @@ fn main() {
         }
     }
     println!("Elasped time: {} us", s);
-}
-
-
-#[test]
-fn test_bcd() {
-    let mut n;
-
-    n = sb::math::to_bcd(1);
-    assert!(n == 0x01);
-    n = sb::math::from_bcd(n);
-    assert!(n == 1);
-
-    n = sb::math::to_bcd(90);
-    assert!(n == 0x09_00);
-    n = sb::math::from_bcd(n);
-    assert!(n == 90);
-
-    n = sb::math::to_bcd(100);
-    assert!(n == 0x01_00_00);
-    n = sb::math::from_bcd(n);
-    assert!(n == 100);
-
 }
