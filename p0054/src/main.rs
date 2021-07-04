@@ -62,9 +62,10 @@ NOTES:
 */
 
 use std::io::BufRead;
+use std::cmp::Ordering;
 
 
-#[derive(Debug)]
+#[derive(Debug,Copy,Clone)]
 struct Card {
     rank : u8,
     suit : u8,
@@ -109,7 +110,8 @@ fn make_card(rank : u8, suit : u8) -> Card {
 }
 
 
-#[derive(Debug)]
+#[derive(Debug,Clone)]
+#[allow(dead_code)]
 enum Rank {
     HighCard{ rank: Vec::<u8> }, // rank[0] is high card, followed by remaining card ranks in descending order
     Pair{ rank: Vec::<u8>  },    // rank[0] is pair cards, followed by remaining card ranks in descending order
@@ -248,15 +250,178 @@ impl PartialEq for Rank {
 }
 
 
-/*
-impl PartialEq for Vec::<Card> {
 
-    fn eq(&self, other: &Self) -> bool {
+impl PartialOrd for Rank {
 
+
+
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+
+        fn rank_to_int(rank : &Rank) -> u8 {
+
+            match rank {
+                Rank::HighCard{ rank : _ } => { return 0; },
+                Rank::Pair{ rank : _ } => { return 1; },
+                Rank::TwoPair{ rank : _ } => { return 2; },
+                Rank::Three{ rank : _ } => { return 3; },
+                Rank::Straight{ rank : _ } => { return 4; },
+                Rank::Flush{ rank : _ } => { return 5; },
+                Rank::FullHouse{ rank : _ } => { return 6; },
+                Rank::Four{ rank : _ } => { return 7; },
+                Rank::StraightFlush{ rank : _ } => { return 8; },
+                Rank::RoyalFlush => { return 9; },
+            }
+            // panic!("Invalid rank!");
+        }
+
+        let self_int = rank_to_int(self);
+        let other_int = rank_to_int(other);
+
+        if self_int > other_int {
+            return Some(Ordering::Greater);
+        }
+        else if self_int < other_int {
+            return Some(Ordering::Less);
+        }
+
+        match self {
+
+            Rank::HighCard { rank : self_rank } => {
+                if let Rank::HighCard { rank : other_rank } = other {
+                    if self_rank == other_rank {
+                        return Some(Ordering::Equal);
+                    }
+                    else if self_rank > other_rank {
+                        return Some(Ordering::Greater);
+                    }
+                    else {
+                        return Some(Ordering::Less);
+                    }
+                }
+            },
+
+            Rank::Pair { rank : self_rank } => {
+                if let Rank::Pair { rank : other_rank } = other {
+                    if self_rank == other_rank {
+                        return Some(Ordering::Equal);
+                    }
+                    else if self_rank > other_rank {
+                        return Some(Ordering::Greater);
+                    }
+                    else {
+                        return Some(Ordering::Less);
+                    }
+                }
+            },
+
+            Rank::TwoPair { rank : self_rank } => {
+                if let Rank::TwoPair { rank : other_rank } = other {
+                    if self_rank == other_rank {
+                        return Some(Ordering::Equal);
+                    }
+                    else if self_rank > other_rank {
+                        return Some(Ordering::Greater);
+                    }
+                    else {
+                        return Some(Ordering::Less);
+                    }
+                }
+            },
+
+            Rank::Three { rank : self_rank } => {
+                if let Rank::Three { rank : other_rank } = other {
+                    if self_rank == other_rank {
+                        return Some(Ordering::Equal);
+                    }
+                    else if self_rank > other_rank {
+                        return Some(Ordering::Greater);
+                    }
+                    else {
+                        return Some(Ordering::Less);
+                    }
+                }
+            },
+
+            Rank::Straight { rank : self_rank } => {
+                if let Rank::Straight { rank : other_rank } = other {
+                    if self_rank == other_rank {
+                        return Some(Ordering::Equal);
+                    }
+                    else if self_rank > other_rank {
+                        return Some(Ordering::Greater);
+                    }
+                    else {
+                        return Some(Ordering::Less);
+                    }
+                }
+            },
+
+            Rank::Flush { rank : self_rank } => {
+                if let Rank::Flush { rank : other_rank } = other {
+                    if *self_rank == *other_rank {
+                        return Some(Ordering::Equal);
+                    }
+                    else if self_rank > other_rank {
+                        return Some(Ordering::Greater);
+                    }
+                    else {
+                        return Some(Ordering::Less);
+                    }
+                }
+            },
+
+            Rank::FullHouse { rank : self_rank } => {
+                if let Rank::FullHouse { rank : other_rank } = other {
+                    if self_rank == other_rank {
+                        return Some(Ordering::Equal);
+                    }
+                    else if self_rank > other_rank {
+                        return Some(Ordering::Greater);
+                    }
+                    else {
+                        return Some(Ordering::Less);
+                    }
+                }
+            },
+
+            Rank::Four { rank : self_rank } => {
+                if let Rank::Four { rank : other_rank } = other {
+                    if self_rank == other_rank {
+                        return Some(Ordering::Equal);
+                    }
+                    else if self_rank > other_rank {
+                        return Some(Ordering::Greater);
+                    }
+                    else {
+                        return Some(Ordering::Less);
+                    }
+                }
+            },
+
+            Rank::StraightFlush { rank : self_rank } => {
+                if let Rank::StraightFlush { rank : other_rank } = other {
+                    if self_rank == other_rank {
+                        return Some(Ordering::Equal);
+                    }
+                    else if self_rank > other_rank {
+                        return Some(Ordering::Greater);
+                    }
+                    else {
+                        return Some(Ordering::Less);
+                    }
+                }
+            },
+
+            Rank::RoyalFlush => {
+                if let Rank::RoyalFlush = other {
+                    return Some(Ordering::Equal);
+                }
+            },
+        }
+        None
     }
 
 }
- */
 
 
 impl RankHand for Vec::<Card> {
@@ -319,16 +484,6 @@ impl RankHand for Vec::<Card> {
 
 }
 
-
-
-
-
-
-// return true if p1 beats p2
-fn compare_hands(_p1 : Vec::<Card>, _p2 : Vec::<Card>) -> bool {
-    false
-
-}
 
 fn solve() -> u64 {
 
