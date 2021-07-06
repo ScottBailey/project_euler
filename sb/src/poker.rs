@@ -469,7 +469,7 @@ impl RankHand for Vec::<Card> {
                         let mut result = Vec::<u8>::with_capacity(ranked.len());
                         result.push(card as u8);
                         result.push(is_pair);
-                        result.sort_by(|a,b|a.cmp(b));
+                        result.sort_by(|a,b|b.cmp(a));
                         for c in ranked {
 	                    if c != card as u8 && c != is_pair {
                                 result.push(c);
