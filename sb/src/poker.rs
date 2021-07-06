@@ -90,24 +90,6 @@ pub trait RankHand {
     fn rank(&self) -> Rank;
 }
 
-#[test]
-pub fn test_rank() {
-
-    let hand_rf1 : Vec::<Card> = vec![ make_card(14, 1), make_card(13, 1), make_card(12, 1), make_card(11, 1), make_card(10,1) ];
-    let hand_rf2 : Vec::<Card> = vec![ make_card(14, 2), make_card(13, 2), make_card(12, 2), make_card(11, 2), make_card(10,2) ];
-
-    let hand_straight_ace : Vec::<Card> = vec![ make_card(14, 2), make_card(13, 1), make_card(12, 1), make_card(11, 1), make_card(10,1) ];
-    let hand_straight_king : Vec::<Card> = vec![ make_card(13, 1), make_card(12, 1), make_card(11, 1), make_card(10,1), make_card(9,3) ];
-
-    assert!(hand_rf1.rank() == hand_rf2.rank());
-
-    println!("{:?}", hand_rf1.rank());
-    println!("{:?}", hand_straight_ace.rank());
-
-    assert!(hand_rf1.rank() != hand_straight_ace.rank());
-    assert!(hand_straight_king.rank() != hand_straight_ace.rank());
-}
-
 
 impl PartialEq for Rank {
 
@@ -521,3 +503,65 @@ impl RankHand for Vec::<Card> {
 
 
 //--- hand ------------------------------------------------------------------------------------------
+
+#[derive(Debug,Clone)]
+pub struct Hand {
+    cards : Vec::<Card>,
+}
+
+impl Hand {
+
+    pub fn new() -> Self {
+        Hand { cards : Vec::<Card>::with_capacity(5) }
+    }
+
+    pub fn add_card(&mut self, rank : u8, suit : u8) {
+        self.cards.push( make_card(rank,suit) );
+    }
+
+}
+
+
+impl RankHand for Hand {
+
+    fn rank(&self) -> Rank {
+        self.cards.rank()
+    }
+}
+
+
+impl PartialEq for Hand
+{
+    fn eq(&self, other: &Self) -> bool {
+        self.rank() == other.rank()
+    }
+}
+
+
+impl PartialOrd for Hand {
+
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        self.rank().partial_cmp(&other.rank())
+    }
+}
+
+
+//--- tests ------------------------------------------------------------------------------------------
+
+#[test]
+pub fn test_rank() {
+
+    let hand_rf1 : Vec::<Card> = vec![ make_card(14, 1), make_card(13, 1), make_card(12, 1), make_card(11, 1), make_card(10,1) ];
+    let hand_rf2 : Vec::<Card> = vec![ make_card(14, 2), make_card(13, 2), make_card(12, 2), make_card(11, 2), make_card(10,2) ];
+
+    let hand_straight_ace : Vec::<Card> = vec![ make_card(14, 2), make_card(13, 1), make_card(12, 1), make_card(11, 1), make_card(10,1) ];
+    let hand_straight_king : Vec::<Card> = vec![ make_card(13, 1), make_card(12, 1), make_card(11, 1), make_card(10,1), make_card(9,3) ];
+
+    assert!(hand_rf1.rank() == hand_rf2.rank());
+
+    println!("{:?}", hand_rf1.rank());
+    println!("{:?}", hand_straight_ace.rank());
+
+    assert!(hand_rf1.rank() != hand_straight_ace.rank());
+    assert!(hand_straight_king.rank() != hand_straight_ace.rank());
+}
