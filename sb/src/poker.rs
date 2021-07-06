@@ -385,7 +385,7 @@ impl RankHand for Vec::<Card> {
             ranked.push(c.rank);
         }
 
-        ranked.sort_by(|a,b|a.cmp(b));
+        ranked.sort_by(|a,b|b.cmp(a));
         ranked.dedup();
 
         // Test for straight.
@@ -506,7 +506,7 @@ impl RankHand for Vec::<Card> {
 
 #[derive(Debug,Clone)]
 pub struct Hand {
-    cards : Vec::<Card>,
+    pub cards : Vec::<Card>,  // doesn't exactly need to be public...
 }
 
 impl Hand {
