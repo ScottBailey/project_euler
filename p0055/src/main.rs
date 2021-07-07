@@ -38,7 +38,7 @@ NOTES:
   u64 overflows, use u128
 
   We can use a vector of bools to indicate which numbers are or become
-  palindromes. This results in a savings of 20% or so.
+  palindromes. This results in a savings of 35% or so.
 */
 
 
