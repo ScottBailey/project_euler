@@ -33,9 +33,12 @@ How many Lychrel numbers are there below ten-thousand?
 NOTE: Wording was modified slightly on 24 April 2007 to emphasise the
 theoretical nature of Lychrel numbers.
 
-NOTES: u64 overflows
+NOTES:
 
+  u64 overflows, use u128
 
+  We can use a vector of bools to indicate which numbers are or become
+  palindromes. This results in a savings of 20% or so.
 */
 
 
