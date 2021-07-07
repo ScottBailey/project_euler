@@ -21,20 +21,15 @@ use num_bigint::BigUint;
 fn solve() -> u64 {
 
     let mut max = 0;
-    for a in 1..=100_u64 {
-        for b in 1..=100 {
+
+    for a in 1..100_u64 {
+        for b in 1..100_u32 {
             // Create the number: a^b
             let num = BigUint::from(a).pow(b);
-
-            // Iterate over the u64 parts of the number:
-            let mut sum = 0;
-            for i in num.iter_u64_digits() {
-                // Iterate over the individual digits in the u64, adding them to the sum.
-                let mut n = i;
-                while n > 0 {
-                    sum += n%10;
-                    n /= 10;
-                }
+            // Iterate over the digits of the number, summing them:
+            let mut sum = 0_u64;
+            for n in num.to_radix_le(10) {
+                sum += n as u64;
             }
             // If this is the new max, take it.
             if sum > max {
