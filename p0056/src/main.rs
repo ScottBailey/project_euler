@@ -22,19 +22,13 @@ fn solve() -> u64 {
 
     let mut max = 0;
 
-    for a in (1..100_u64).rev() {
-        for b in (1..100_u32).rev() {
+    for a in 1..100_u64 {
+        for b in 1..100_u32 {
             // Create the number: a^b
             let num = BigUint::from(a).pow(b);
             // Iterate over the digits of the number, summing them:
             let mut sum = 0_u64;
-            let digits = num.to_radix_le(10);
-            if ((digits.len() * 9) as u64) < max {
-                if b == 99 {
-                    return max;
-                }
-            }
-            for n in digits {
+            for n in num.to_radix_le(10) {
                 sum += n as u64;
             }
             // If this is the new max, take it.
