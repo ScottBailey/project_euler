@@ -45,7 +45,6 @@ fn solve() -> u64 {
     for _ in 1..=1000 {
         let mut temp_numer = numer.clone();
         temp_numer += &denom;
-//        println!("{} {}/{}", i, temp_numer, denom);
 
         if temp_numer.to_radix_le(10).len() > denom.to_radix_le(10).len()  {
             rv += 1;
