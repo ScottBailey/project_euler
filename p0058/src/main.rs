@@ -35,9 +35,6 @@ First cut:
 
 
 fn solve() -> u64 {
-    // get a vector of primes up to the value 100
-    let mut primes = sb::math::prime_to(100);
-
     let mut count = 0_u64; // count of corner primes
     let mut total = 1_u64; // total count of corners (includes the center)
 
@@ -47,14 +44,10 @@ fn solve() -> u64 {
     loop {
         // Increment the corner size
         sz += 2;
-        // Ensure we have a prime in the list larger than our test number.
-        while primes.last().unwrap() < &(4*sz + last) {
-            sb::math::prime_next(&mut primes);
-        }
         // iterate over the corners
         for _ in 0..4 { // This could be unwrapped?
             last += sz;
-            if let Ok(_) = primes.binary_search(&last) {
+            if primes::is_prime(last) {
                 count += 1;
             }
         }
