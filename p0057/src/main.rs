@@ -35,26 +35,31 @@ use num_bigint::BigUint;
 
 fn solve() -> u64 {
 
-    let mut rv = 0;
+    let mut rv = 0; // return value
 
     let two = BigUint::from(2_u64);
 
     let mut numer = BigUint::from(1_u64);
     let mut denom = two.clone();
 
-    for _ in 1..=1000 {
-        let mut temp_numer = numer.clone();
-        temp_numer += &denom;
+    // note: we aren't testing on the zero iteration
 
-        if temp_numer.to_radix_le(10).len() > denom.to_radix_le(10).len()  {
-            rv += 1;
-        }
-
+    for _ in 1..1000 {
+        // Continue the fraction
         let mut temp_numer = denom.clone();
         temp_numer *= &two;
         temp_numer += numer;
         numer = denom;
         denom = temp_numer;
+
+        // Temporarily add one...
+        let mut temp_numer = numer.clone();
+        temp_numer += &denom;
+        // ...for the test:
+        if temp_numer.to_radix_le(10).len() > denom.to_radix_le(10).len()  {
+            rv += 1;
+        }
+
     }
 
     rv
