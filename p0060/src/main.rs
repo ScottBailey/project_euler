@@ -31,72 +31,98 @@ fn concat(a : u64, b : u64) -> u64 {
 
 fn solve() -> u64 {
 
+    // We shouldn't expect sums larger than MAX
     const MAX : u64 = 50_000;
     let mut rv = MAX;
+
+    // Use a library for getting primes
     let mut prime_set = primes::Sieve::new();
 
-    for i1 in 0..1000 {
-        let n1 = prime_set.get(i1);
-        if n1 > rv {
+    // Iterate over primes all the primes with values less than 5*rv
+    for i in 0.. {
+        let n1 = prime_set.get(i); // get's the ith prime
+        if (n1*5) > rv { // If the resulting value is excessive, we are done.
             break;
         }
 
-        for i2 in (i1+1).. {
-            let n2 = prime_set.get(i2);
-            if (n1 + (n2*4)) > rv {
+        // Find and store all the reasonably sized primes that
+        // concatenate to generate primes.
+        let mut maybe = Vec::<u64>::new();
+        let nsum = 4*n1;
+        for j in (i+1).. {
+            let n2 = prime_set.get(j);
+            if nsum + n2 > rv {
                 break;
             }
-            if !prime_set.is_prime(concat(n1,n2)) || !prime_set.is_prime(concat(n2,n1)) {
-                continue;
+            if prime_set.is_prime(concat(n1,n2)) && prime_set.is_prime(concat(n2,n1)) {
+                maybe.push(n2);
+            }
+        }
+
+        // Make sure we have enough primes to test.
+        if maybe.len() < 4 {
+            continue;
+        }
+
+        // For all the members of maybe, try to find a set that
+        // concatenate into primes.
+        for i2 in 0..(maybe.len()-3) {
+            let n2 = maybe[i2];
+            let sum2 = n1 + n2;
+            if sum2 + (3*n2) > rv { // sanity check size
+                break;
             }
 
-            for i3 in (i2+1).. {
-                let n3 = prime_set.get(i3);
-                if (n1 + n2 + (n3*3)) > rv {
+            for i3 in (i2+1)..(maybe.len()-2) {
+                let n3 = maybe[i3];
+                let sum3 = sum2 + n3;
+                if sum3 + (2*n3) > rv { // sanity check size
                     break;
                 }
-                if !prime_set.is_prime(concat(n1,n3)) || !prime_set.is_prime(concat(n3,n1))
-                    || !prime_set.is_prime(concat(n2,n3)) || !prime_set.is_prime(concat(n3,n2)) {
+                if !prime_set.is_prime(concat(n2,n3)) || !prime_set.is_prime(concat(n3,n2)) {
                     continue;
                 }
 
-                for i4 in (i3+1).. {
-                    let n4 = prime_set.get(i4);
-                    if (n1 + n2 + n3 + (n4*2)) > rv {
+                for i4 in (i3+1)..(maybe.len()-1) {
+                    let n4 = maybe[i4];
+                    let sum4 = sum3 + n4;
+                    if sum4 + n4 > rv { // sanity check size
                         break;
                     }
-                    if !prime_set.is_prime(concat(n1,n4)) || !prime_set.is_prime(concat(n4,n1))
-                        || !prime_set.is_prime(concat(n2,n4)) || !prime_set.is_prime(concat(n4,n2))
+                    if !prime_set.is_prime(concat(n2,n4)) || !prime_set.is_prime(concat(n4,n2))
                         || !prime_set.is_prime(concat(n3,n4)) || !prime_set.is_prime(concat(n4,n3)) {
                             continue;
                         }
 
-                    for i5 in (i4+1).. {
-                        let n5 = prime_set.get(i5);
-                        let sum = n1 + n2 + n3 + n4 + n5;
-                        if sum > rv {
+                    for i5 in (i4+1)..maybe.len() {
+                        let n5 = maybe[i5];
+                        let sum5 = sum4 + n5;
+                        if sum5 > rv { // sanity check size
                             break;
                         }
-                        if !prime_set.is_prime(concat(n1,n5)) || !prime_set.is_prime(concat(n5,n1))
-                            || !prime_set.is_prime(concat(n2,n5)) || !prime_set.is_prime(concat(n5,n2))
+
+                        if !prime_set.is_prime(concat(n2,n5)) || !prime_set.is_prime(concat(n5,n2))
                             || !prime_set.is_prime(concat(n3,n5)) || !prime_set.is_prime(concat(n5,n3))
                             || !prime_set.is_prime(concat(n4,n5)) || !prime_set.is_prime(concat(n5,n4)) {
-                            continue;
-                        }
+                                continue;
+                            }
 
-                        rv = sum;
+                        rv = sum5; // found it
                     }
                 }
             }
         }
     }
 
+    // Test to see if we found an answer.
     if rv == MAX {
         panic!("Failed to find an answer");
     }
+    // Test to see if it's the right answer.
     if rv != 26033 {
         panic!("Found the wrong answer. Expected 26033, found {}", rv);
     }
+
     rv
 }
 
