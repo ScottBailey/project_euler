@@ -36,122 +36,7 @@ set.
 
 use std::collections::HashMap;
 
-
-struct Container {
-    pub four_digit : Vec::<u64>,            // List of all the 4 digit values in the container.
-    pub digits : HashMap::<u64,Vec::<u64>>, // Map of first digits to list of last digits for the given first.
-}
-
-impl Container {
-
-    pub fn new() -> Self {
-        Container { four_digit : Vec::<u64>::new(), digits : HashMap::<u64,Vec::<u64>>::new() }
-    }
-
-    pub fn populate_digits(&mut self) {
-        for n in &self.four_digit {
-            let a = n/100;
-            match self.digits.get_mut(&a) {
-                Some(v) => v.push(n%100),
-                None => {self.digits.insert(a, vec!(n%100));},
-            };
-        }
-    }
-}
-
-
-//fn recurse() -> u64 {
-
-
-
-
-
-fn solve() -> u64 {
-
-    // Container for Triangle values.
-    let mut p3 = Container::new();
-    // Populate Triangle values with 4 digit numbers.
-    for j in 20.. {
-        let temp = p(3,j);
-        match temp {
-            0..=999 => continue,
-            1000..=9999 => p3.four_digit.push(temp),
-            _ => break,
-        }
-    }
-    // p3.populate_digits();
-
-    // Vector for values of functions (except Triangle, above): Square, Pentagonal, Hexagonal, Heptagonal, Octagonal.
-    let mut v = vec!( Container::new(), Container::new(), Container::new(), Container::new(), Container::new());
-
-    //  Populate vector with 4 digit numbers for all functions.
-    for i in 0..=4 {
-        for j in 20.. {
-            let temp = p(i+4,j);
-            match temp {
-                0..=999 => continue,
-                1000..=9999 => v[i].four_digit.push(temp),
-                _ => break,
-            }
-        }
-        v[i].populate_digits();
-    }
-
-
-    //(vindex, subindex)
-
-    for first_full in p3.four_digit {
-        let last = first_full/100;
-        let next = first_full%100;
-
-        use itertools::Itertools;
-
-        for perm in v.iter().permutations(v.len()) {
-
-            if let Some(list0) = perm[0].digits.get(&next) {
-                for next0 in list0 {
-                    if let Some(list1) = perm[1].digits.get(&next0) {
-                        for next1 in list1 {
-                            if let Some(list2) = perm[2].digits.get(&next1) {
-                                for next2 in list2 {
-                                    if let Some(list3) = perm[3].digits.get(&next2) {
-                                        for next3 in list3 {
-                                            if let Some(list4) = perm[4].digits.get(&next3) {
-                                                for next4 in list4 {
-
-                                                    if *next4 == last {
-
-                                                        let ff0 = next*100+next0;
-                                                        let ff1 = next0*100+next1;
-                                                        let ff2 = next1*100+next2;
-                                                        let ff3 = next2*100+next3;
-                                                        let ff4 = next3*100+next4;
-
-
-                                                        println!("solution! {} {} {} {} {} {}", first_full, ff0, ff1, ff2, ff3, ff4);
-                                                        return first_full + ff0 + ff1 + ff2 + ff3 + ff4;
-
-                                                    }
-
-                                                }
-                                            }
-
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-    }
-
-    panic!("No soution found.");
-}
-
-
+// Figurate function. a is the polynomial (e.g. 3 = Triangle, 4 = Square, etc), n is n. :-)
 fn p(a : usize, n : u64) -> u64 {
     match a {
         3 => n * (n+1) / 2,
@@ -165,6 +50,110 @@ fn p(a : usize, n : u64) -> u64 {
 }
 
 
+// This container will hold all the critical (i.e. 4 digit) figurate
+// numbers and then a hash map of the first to digits to a list of the last two digits.q
+struct Container {
+    pub four_digit : Vec::<u64>,            // List of all the 4 digit values in the container.
+    pub digits : HashMap::<u64,Vec::<u64>>, // Map of first digits to list of last digits for the given first.
+}
+
+impl Container {
+
+    // Create an initial container of a given polynomial.
+    pub fn new(a : usize) -> Self {
+
+        let mut rv = Container { four_digit : Vec::<u64>::new(), digits : HashMap::<u64,Vec::<u64>>::new() };
+        // 20 is a rough starting point, values below this are guaranteed to generate a number less than 4 digits.
+        for i in 20.. {
+            let temp = p(a,i);
+            match temp {
+                0..=999 => continue,
+                1000..=9999 => rv.four_digit.push(temp),
+                _ => break,
+            }
+        }
+
+        for n in &rv.four_digit {
+            let b = n/100;
+            match rv.digits.get_mut(&b) {
+                Some(v) => v.push(n%100),
+                None => {rv.digits.insert(b, vec!(n%100));},
+            };
+        }
+
+        rv
+    }
+}
+
+
+
+fn solve() -> u64 {
+
+    // Container with Triangle values.
+    let mut p3 = Container::new(3);
+    // Populate Triangle values with 4 digit numbers.
+    for j in 20.. {
+        let temp = p(3,j);
+        match temp {
+            0..=999 => continue,
+            1000..=9999 => p3.four_digit.push(temp),
+            _ => break,
+        }
+    }
+    // Vector for values of functions (except Triangle, above): Square, Pentagonal, Hexagonal, Heptagonal, Octagonal.
+    let v = vec!( Container::new(4), Container::new(5), Container::new(6), Container::new(7), Container::new(8));
+
+    // Starting with triangles...
+    for first_full in p3.four_digit {
+        let last = first_full/100;
+        let next = first_full%100;
+
+        // ...iterate over all the premutations of the vector...
+        use itertools::Itertools;
+
+        for perm in v.iter().permutations(v.len()) {
+            // ...trying to match up the last two digits of the previous number with the first two digits of the next number.
+            if let Some(list0) = perm[0].digits.get(&next) {
+                for next0 in list0 {
+                    if let Some(list1) = perm[1].digits.get(&next0) {
+                        for next1 in list1 {
+                            if let Some(list2) = perm[2].digits.get(&next1) {
+                                for next2 in list2 {
+                                    if let Some(list3) = perm[3].digits.get(&next2) {
+                                        for next3 in list3 {
+                                            if let Some(list4) = perm[4].digits.get(&next3) {
+                                                for next4 in list4 {
+
+                                                    // Return when the solution is found.
+                                                    if *next4 == last {
+                                                        let ff0 = next*100+next0;
+                                                        let ff1 = next0*100+next1;
+                                                        let ff2 = next1*100+next2;
+                                                        let ff3 = next2*100+next3;
+                                                        let ff4 = next3*100+next4;
+                                                        //println!("solution! {} {} {} {} {} {}", first_full, ff0, ff1, ff2, ff3, ff4);
+                                                        return first_full + ff0 + ff1 + ff2 + ff3 + ff4;
+                                                    }
+
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    panic!("No soution found.");
+}
+
+
+
+
 
 fn main() {
 
@@ -174,6 +163,10 @@ fn main() {
 
     let elapsed = start_time.elapsed().as_micros();
     println!("\nSolution: {}", sol);
+
+    if sol != 28684 {
+        panic!("Expected 28684, received {}.", sol);
+    }
 
     let mut remain = elapsed;
     let mut s = String::new();
