@@ -89,36 +89,3 @@ fn main() {
     }
     println!("Elasped time: {} us", s);
 }
-
-
-
-
-#[test]
-fn test_px() {
-
-    assert!( p(3,1) == 1 );
-    assert!( p(3,2) == 3 );
-    assert!( p(3,3) == 6 );
-
-    assert!( p(4,1) == 1 );
-    assert!( p(4,2) == 4 );
-    assert!( p(4,3) == 9 );
-
-    assert!( p(5,1) == 1 );
-    assert!( p(5,2) == 5 );
-    assert!( p(5,3) == 12 );
-
-    assert!( p(6,1) == 1 );
-    assert!( p(6,2) == 6 );
-    assert!( p(6,3) == 15 );
-
-    assert!( p(7,1) == 1 );
-    assert!( p(7,2) == 7 );
-    assert!( p(7,3) == 18 );
-
-    assert!( p(8,1) == 1 );
-    assert!( p(8,2) == 8 );
-    assert!( p(8,3) == 21 );
-
-
-}
