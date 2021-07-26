@@ -38,22 +38,22 @@ fn to_max_permutation(mut n : u128) -> u128 {
 
 
 fn solve() -> u128 {
-    // Map of permutations to list of cubes.
-    let mut map = HashMap::<u128,Vec::<u128>>::new();
+    // Map of permutations to lowest and count of cubes.
+    let mut map = HashMap::<u128,(u128,usize)>::new();
 
     // For all numbers!
     for i in 0_u128.. {
         // Find the cube and its permutation.
         let n = i*i*i;
         let p = to_max_permutation(n);
-        // Store the value...
+        // Store the initial value or increment the count...
         match map.get_mut(&p) {
-            None => {map.insert(p, vec!(n));},
-            Some(v) => {
-                v.push(n%100);
+            None => {map.insert(p, (n,1));},
+            Some(mut t) => {
+                t.1 += 1;
                 // ...testing to see if we found the soulution.
-                if v.len() == 5 {
-                    return v[0];
+                if t.1 == 5 {
+                    return n;
                 }
             },
         };
