@@ -9,6 +9,7 @@ How many n-digit positive integers exist which are also an nth power?
 
 */
 
+//use math::round;
 
 fn digit_count(mut n : u128) ->u128 {
 
@@ -36,10 +37,29 @@ fn pow(x :u128, y :u128) -> u128 {
 }
 
 
-
 fn solve() -> u128 {
 
     let mut rv = 0;
+
+    /*
+    let mut this_min = 0;
+    for y in 1..21 {
+        let this_max = pow(10,y)-1;
+
+        let lo = round::ceil( (this_min as f64).powf(1.0/ (y as f64)), 0) as u128;
+
+        let hi = (this_max as f64).powf(1.0/ (y as f64)) as u128;
+
+        if hi < lo {
+            break;
+        }
+        rv += 1+hi-lo;
+
+        println!("y={}, {} {}, {}", y, lo, hi, rv);
+
+        this_min = this_max+1;
+    }
+     */
 
     for y in 1.. {
         let mut found = false;
